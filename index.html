@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <style>
+      .container {
+        margin: 20px auto;
+        text-align: center;
+      }
+      #canvas {
+        background: rgb(0,251,221);
+      }
+      #controls {
+        display: inline-block;
+        padding: 20px;
+      }
+      #controls ul {
+        list-style-type: none;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body onload="draw();">
+    <div class="container">
+      <canvas id="canvas" width="500" height="500"></canvas>
+      <div id="controls">
+        // color controls not working yet //
+        <ul>
+          <li><input type="checkbox" id="teal" value="teal"> <label for="teal">teal</label></li>
+          <li><input type="checkbox" id="yellow" value="yellow"> <label for="yellow">yellow</label></li>
+          <li><input type="checkbox" id="pink" value="pink"> <label for="pink">pink</label></li>
+          <li><input type="checkbox" id="purple" value="purple"> <label for="purple">purple</label></li>
+          <li><input type="checkbox" id="blue" value="blue"> <label for="blue">blue</label></li>
+        </ul>
+      </div>
+    </div>
+    <script type="application/javascript">
+      var CANVAS_WIDTH = 600;
+      var CANVAS_HEIGHT = 600;
+
+      var STRIPE_WIDTH = 1;
+      var MIN_STRIPE_LENGTH = 100;
+      var LAST_COLUMN_INDEX = (CANVAS_WIDTH / STRIPE_WIDTH) - 1;
+
+      var NUM_OF_STRIPES = 5000;
+
+      var COLOR_OFFSET_MAX = 20;
+
+      var BASE_COLORS = [
+        "teal", 
+        // "yellow", 
+        // "pink", 
+        // "purple", 
+        // "blue"
+      ];
+
+      function draw() {
+        var canvas = document.getElementById("canvas");
+        if (canvas.getContext) {
+          var ctx = canvas.getContext("2d");
+
+          drawColourStripes(ctx);
+          
+        }
+      }
+
+      function drawColourStripes(ctx,colorName) {
+        var colors = BASE_COLORS.slice(0).concat(BASE_COLORS.slice(0)).concat(BASE_COLORS.slice(0));
+        
+        colors = colors.sort(function() {
+          return 0.5 - Math.random();
+        });
+
+        console.log(colors);
+
+        for (var i=0; i<NUM_OF_STRIPES; i++) {
+          var x = Math.floor(Math.random()*LAST_COLUMN_INDEX) * STRIPE_WIDTH;
+          var y = Math.floor(Math.random()*CANVAS_HEIGHT);
+
+          colors.forEach(function(colorName) {
+            drawStripe(ctx,x,y,colorRandomizer(colorName));
+          })
+        }
+      }
+
+      function colorRandomizer(colorName) {
+        var baseRed, baseGreen, baseBlue;
+
+        // colors
+        // teal: rgb(0,251,221);
+        // yellow: rgb(228,248,50);
+        // pink: rgb(250,27,171);
+        // purple: rgb(109,34,175);
+        // blue: rgb(54,47,193);
+
+        switch(colorName) {
+          case "yellow":
+            baseRed = 228;
+            baseGreen = 248;
+            baseBlue = 50;
+            break;
+          case "pink":
+            baseRed = 250;
+            baseGreen = 27;
+            baseBlue = 171;
+            break;
+          case "purple":
+            baseRed = 109;
+            baseGreen = 34;
+            baseBlue = 175;
+            break;
+          case "blue":
+            baseRed = 54;
+            baseGreen = 47;
+            baseBlue = 193;
+            break;
+          default:
+            // teal
+            baseRed = 0;
+            baseGreen = 251;
+            baseBlue = 221;
+        }
+
+        var offsetMultiplier = {
+          r: Math.random() < 0.5 ? -1 : 1,
+          g: Math.random() < 0.5 ? -1 : 1,
+          b: Math.random() < 0.5 ? -1 : 1
+        }
+
+        var red = baseRed + Math.floor(Math.random()*COLOR_OFFSET_MAX) * offsetMultiplier.r;
+        var green = baseGreen + Math.floor(Math.random()*COLOR_OFFSET_MAX) * offsetMultiplier.g;
+        var blue = baseBlue + Math.floor(Math.random()*COLOR_OFFSET_MAX) * offsetMultiplier.b;
+
+        return "rgb(" + red + "," + green + "," + blue + ")";
+      }
+
+      function lengthRandomizer() {
+        return Math.random() * 100 + MIN_STRIPE_LENGTH;
+      }
+
+      function drawStripe(ctx,x,y,color) {
+        ctx.fillStyle = color;
+        ctx.fillRect (x, y, STRIPE_WIDTH, lengthRandomizer());
+      }
+    </script>
+  </body>
+</html>
